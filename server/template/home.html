@@ -1,0 +1,37 @@
+{% extends "template_center.html" %}
+
+{% block center %}
+
+{% if len(member_courses)==0 %}
+	<div class="item">Keine Kursteilnahmen...</div> 
+{% else %}
+	<div class="desciption" style="padding: 0 10px;">Kurs-teilnahmen:</div>
+
+	<div class="link_list">
+			{% for course in member_courses %}
+				<a class="item" href="/course/{{ course["id"] }}">{{ course["name"]}}</a>
+			{% end %}
+	</div>
+{% end %}
+
+{% if len(tutor_courses)>0 %}
+	<br>
+	<div class="desciption" style="padding: 0 10px;">Kurs-tutorate:</div>
+
+	<div class="link_list">
+			{% for course in tutor_courses %}
+				<a class="item" href="/course_tutor/{{ course["id"] }}">{{ course["name"]}}</a>
+			{% end %}
+	</div>
+{% end %}
+
+{% if is_admin %}
+<!--
+<div style="display:flex">
+	<input type="button" value="add course" onclick="prompt('enter new course name')">
+	<input type="button" value="delete course" onclick="prompt('enter name of course to delete (Attention: this will delete all course exercises and grades and cannot be made undone!)')">
+</div>
+-->
+{% end %}
+
+{% end %}

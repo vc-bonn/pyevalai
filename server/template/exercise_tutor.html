@@ -1,0 +1,253 @@
+{% extends "template_center.html" %}
+
+{% block bar %}
+<a class="item" href="/course_tutor/{{course["id"]}}"><div class="rangle"></div><div class="title">{{ course["name"] }}</div></a>
+<div class="item"><div class="rangle"></div><div class="title">{{ exercise["name"] }}</div></div>
+
+{% end %}
+
+{% block center %}
+
+	<div class="box" id="exercise">
+		
+		<!--div>previous / next exercise...</div-->
+		<div style="display:flex;justify-content:space-between;align-items: baseline;">
+			<div style="font-size:20px;font-weight:bold;">{{ exercise["name"] }}</div>
+			<div class="arrow_container">
+				
+				{% if prev_ex_id is not None %}
+					<a class="left" href="/exercise_tutor/{{course["id"]}}/{{prev_ex_id}}/{{member["username"]}}"></a>
+				{% else %}
+					<div class="left"></div>
+				{% end %}
+				
+				{% if next_ex_id is not None %}
+					<a class="right" href="/exercise_tutor/{{course["id"]}}/{{next_ex_id}}/{{member["username"]}}"></a>
+				{% else %}
+					<div class="right"></div>
+				{% end %}
+			</div>
+		
+		</div>
+		<div>Aufgabe:</div>
+		<div class="white_box markdown">{{ exercise["exercise"] }}</div>
+	</div>
+	<div class="box" id="student">
+		<div style="display:flex;justify-content:space-between;align-items: baseline;">
+			<div style="font-size:20px;font-weight:bold;">{{member["fullname"]}}</div>
+			<div class="arrow_container">
+				{% if prev_member_name is not None %}
+					<a class="left" href="/exercise_tutor/{{course["id"]}}/{{ex_id}}/{{prev_member_name}}#student"></a>
+				{% else %}
+					<div class="left"></div>
+				{% end %}
+				
+				{% if next_member_name is not None %}
+					<a class="right" href="/exercise_tutor/{{course["id"]}}/{{ex_id}}/{{next_member_name}}#student"></a>
+				{% else %}
+					<div class="right"></div>
+				{% end %}
+			</div>
+		</div>
+		
+	</div>
+	<div class="box" id="solution">
+		{% if exercise["student_solution"] is None %}
+			<div class="white_box markdown">Noch keine Lösung eingereicht...</div>
+		{% else %}
+		
+			<div style="display:flex;justify-content:space-between;align-items: baseline;">
+				<div>Lösung ({{ exercise["student_solution"]["timestamp"].strftime("%Y-%m-%d %H:%M:%S") }}):</div>
+				<div class="arrow_container">
+					{% if prev_solution_id is not None %}
+						<a class="left" href="/exercise_tutor/{{course["id"]}}/{{ex_id}}/{{member["username"]}}/{{prev_solution_id}}#student"></a>
+					{% else %}
+						<div class="left"></div>
+					{% end %}
+					
+					{% if next_solution_id is not None %}
+						<a class="right" href="/exercise_tutor/{{course["id"]}}/{{ex_id}}/{{member["username"]}}/{{next_solution_id}}#student"></a>
+					{% else %}
+						<div class="right"></div>
+					{% end %}
+				</div>
+			</div>
+			<div class="white_box markdown" id="sol_md" onclick="toggle_raw()">{{ exercise["student_solution"]["solution"] }}</div>
+			<div class="white_box" id="sol_raw" style="display:none;padding: 20px 10px" onclick="toggle_md()">{{ exercise["student_solution"]["solution"] }}</div>
+		{% end %}
+	</div>
+	{% if exercise["student_solution"] is not None %}
+		<div class="box" id="answer">
+			{% if exercise["grade"] is not None %}
+				
+				<div style="display:flex;justify-content:space-between;align-items: baseline;">
+					<div>Bewertung ({{ exercise["grade"]["author"]}}, {{ exercise["grade"]["timestamp"].strftime("%Y-%m-%d %H:%M:%S") }}):</div>
+					<div class="arrow_container">
+						{% if prev_grade_id is not None %}
+							<a class="left" href="/exercise_tutor/{{course["id"]}}/{{ex_id}}/{{member["username"]}}/{{solution_id}}/{{prev_grade_id}}#student"></a>
+						{% else %}
+							<div class="left"></div>
+						{% end %}
+						
+						{% if next_grade_id is not None %}
+							<a class="right" href="/exercise_tutor/{{course["id"]}}/{{ex_id}}/{{member["username"]}}/{{solution_id}}/{{next_grade_id}}#student"></a>
+						{% else %}
+							<div class="right"></div>
+						{% end %}
+					</div>
+				</div>
+				
+				
+				<div class="white_box markdown">{{ exercise["grade"]["answer"] }}</div>
+				
+				{% if len(exercise["grade"]["messages"])>0 %}
+				<div style="cursor:pointer" onclick="toggle_details(this)">Details (show)</div>
+				<div id="details" style="display:none">
+					{% for message in exercise["grade"]["messages"] %}
+					<div class="white_box markdown">
+					<strong>{{message["role"]}}:</strong>
+						{{ message["content"] }}
+					</div>
+					{% end %}
+				</div>
+				{% end %}
+				
+				
+			{% end %}
+			
+			<hr>
+			<div style="padding-top:10px;">Neue Bewertung:</div>
+			<form id="form" action="/exercise_tutor/{{course["id"]}}/{{ex_id}}/{{member["username"]}}/{{solution_id}}" method="post">
+				<input type="number" id="correction_points" name="correction_points" min="0" max="{{exercise["points"]}}" placeholder="neue Punktzahl" onkeypress="if(event.keyCode==13){document.getElementById('form').submit()}" autofocus /><!--TODO: max points -->
+				<textarea id="correction_text" name="correction_text" placeholder="neuer Bewertungstext" rows="4" cols="50">
+				
+				</textarea>
+				<input type="button" value="ändern" onclick="document.getElementById('form').submit()" style="margin-top:0">
+				{% module xsrf_form_html() %}
+			</form>
+		</div>
+	{% end %}
+{% end %}
+
+
+
+{% block script %}
+
+<script src="{{ static_url("apis/marked.min.js") }}"></script>
+<script>
+setTimeout(function() {
+  document.getElementById("correction_points").focus();
+}, 10);
+/*
+// Save the scroll position before navigating
+function navigate_to(event,href) {
+    // Prevent immediate navigation
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    // Save the current scroll position
+    const scrollPosition = window.scrollY;
+    sessionStorage.setItem('scrollPosition', scrollPosition);
+    console.log('Scroll position saved:', scrollPosition); // Debug log
+
+    // Navigate to the link's destination
+    window.location.href = href;
+  };
+
+// Restore the scroll position after the page loads
+window.addEventListener('load', () => {
+  const scrollPosition = sessionStorage.getItem('scrollPosition');
+	console.log("scrollPosition load: "+scrollPosition)
+  if (scrollPosition !== null) {
+    window.scrollTo(0, parseInt(scrollPosition, 10));
+  }
+});
+*/
+</script>
+
+<script>
+/*
+	// Secure Markdown-it instance
+	const md = window.markdownit({ html: false }).use(window.markdownitKatex);
+
+	// Example user input (could be from a textarea, API, etc.)
+	const userMarkdown = document.getElementById("sol_raw").innerHTML;
+
+	// Sanitize input before rendering
+	const safeHTML = DOMPurify.sanitize(md.render(userMarkdown));
+	document.getElementById("sol_md").innerHTML = safeHTML;
+*/
+</script>
+
+
+<script>
+
+function toggle_details(e){
+	if(e.innerHTML=="Details (show)"){
+		e.innerHTML = "Details (hide)";
+		document.getElementById("details").style.display="initial";
+		}else{
+		e.innerHTML = "Details (show)";
+		document.getElementById("details").style.display="none";
+		
+		}
+}
+
+function toggle_raw(){
+	document.getElementById("sol_md").style.display="none";
+	document.getElementById("sol_raw").style.display="initial";
+}
+
+function toggle_md(){
+	document.getElementById("sol_md").style.display="initial";
+	document.getElementById("sol_raw").style.display="none";
+	
+}
+
+document.body.innerHTML = document.body.innerHTML.replaceAll("\\begin{align}","$$$$\\begin{aligned}").replaceAll("\\end{align}","\\end{aligned}$$$$"
+	).replaceAll("\\begin{align*}","$$$$\\begin{aligned}").replaceAll("\\end{align*}","\\end{aligned}$$$$"
+	).replaceAll("\\begin{equation}","$$$$\\begin{aligned}").replaceAll("\\end{equation}","\\end{aligned}$$$$"
+	).replaceAll("\\begin{equation*}","$$$$\\begin{aligned}").replaceAll("\\end{equation*}","\\end{aligned}$$$$")
+
+
+// Render KaTeX math expressions in the document body
+renderMathInElement(document.body, {
+    delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+    ]
+});
+
+// Get all elements with the class "markdown"
+const mdElements = document.getElementsByClassName("markdown");
+
+for (let i = 0; i < mdElements.length; i++) {
+    let element = mdElements[i];
+
+    // Step 1: Save KaTeX-rendered spans
+    const katexSpans = [];
+	
+	
+	while(true){
+		spans = document.getElementsByTagName("span")
+		if (spans.length==0){
+			break
+			}
+		span = spans[0]
+		katexSpans.push(span.outerHTML); // Save the original HTML of the span
+        span.outerHTML = `<KATEX_PLACEHOLDER>`; // Replace with a placeholder
+	}
+	
+    element.innerHTML = marked.parse(element.innerHTML);
+	
+	while(true){
+		spans = document.getElementsByTagName("KATEX_PLACEHOLDER")
+		if (spans.length==0){
+			break
+			}
+		span = spans[0]
+        span.outerHTML = katexSpans.shift(); // Replace with a placeholder
+	}
+}
+</script>
+{% end %}

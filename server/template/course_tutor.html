@@ -1,0 +1,64 @@
+{% extends "template_center.html" %}
+
+{% block style %}
+<style>
+body{
+	height: 100%;
+}
+</style>
+{% end %}
+		
+{% block bar %}
+<div class="item"><div class="rangle"></div>{{ course["name"] }}</div>
+<a class="item" href="/course_csv/{{course["id"]}}"><div class="rangle"></div>.csv</a>
+{% end %}
+
+{% block complete_center %}
+
+<div style="height:fit-content;max-height:calc(100lvh - 51px);overflow:auto;">
+<table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        {% for e in exercises %}
+			<th><div>{{e["name"]}}</div></th>
+        {% end %}
+        <th>Sum</th>
+        <th>Sum worked on</th>
+      </tr>
+    </thead>
+    <tbody>
+		{% for i,u in enumerate(users) %}
+			{% if i%2==0 %}
+			<tr class="darker">
+			{% else %}
+			<tr>
+			{% end %}
+				<th>{{u["fullname"]}} ({{u["username"]}})</th>
+				{% for grade in u["grades"] %}
+					<td>
+					<a href="/exercise_tutor/{{course_id}}/{{grade["id"]}}/{{u["username"]}}">
+					{% if grade["grade"] is not None %}
+						{% if not grade["all_checked"] %}
+						
+							<strong>{{grade["grade"]["points"]}}</strong>
+						{% else %}
+							{{grade["grade"]["points"]}}
+						{% end %}
+					{% else %}
+						-
+					{% end %}
+					</a>
+					</td>
+				{% end %}
+				<td>{{u["sum"]}}</td>
+				<td>{{u["sum_worked_on"]}}</td>
+			</tr>
+        {% end %}
+    </tbody>
+  </table>
+</div>
+
+
+
+{% end %}

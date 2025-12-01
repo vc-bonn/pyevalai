@@ -1,0 +1,5 @@
+**__pycache__**
+server/certificates
+server/database.pkl
+server/database_backups
+nohup.out

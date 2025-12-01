@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<meta charset="UTF-8">
+		<title>{% block title %}{% end %}</title>
+		{% block style %}{% end %}
+		{% block meta %}
+			<meta name="description" content="automated grading with artificial intelligence.">
+			<meta name="keywords" content="tutor, grade, ai, llm">
+			<meta name="author" content="Nils Wandel">
+			<meta name="publisher" content="University of Bonn">
+			<meta name="robots" content="noydir">
+			<meta name="robots" content="noodp">
+			<meta name="robots" content="follow">
+			<meta name="robots" content="index">
+			<meta property="og:type" content="website">
+			<meta property="og:title" content="PyEvalAI">
+			<meta property="og:description" content="automated grading with artificial intelligence.">
+			<meta property="og:locale" content="de_DE">
+			<meta name="twitter:card" content="summary_large_image">
+			<meta name="twitter:title" content="PyEvalAI">
+			<meta name="twitter:description" content="automated grading with artificial intelligence.">
+		{% end %}
+		
+		<link rel="stylesheet" href="{{ static_url("general_style.css") }}" type="text/css">
+		<link rel="shortcut icon" href="{{ static_url("icons/icon.png") }}" type="image/x-icon">
+		<meta name="referrer" content="no-referrer">
+		<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+		<link rel="stylesheet" href="{{ static_url("apis/katex.min.css") }}">
+		
+		
+	</head>
+	<body>
+		
+		
+		<div id="bar" class="bar">
+			
+			<div class="item_bar">
+				<a class="item home" href="/home" style="padding: 0 10px; font-size:28px; background-image: url('{{ static_url("icons/home.png") }}'); background-size: 50%; background-repeat: no-repeat; background-position: center; width: 30px;"></a>
+				{% block bar %}{% end %}
+			</div>
+			
+			<div class="item_bar">
+				<div class="item">{{ user["fullname"] }}</div>
+				<a class="item" href="/logout" style="padding: 0 10px; font-size:28px; background-image: url('{{ static_url("icons/logout.png") }}'); background-size: 50%; background-repeat: no-repeat; background-position: center; width: 30px;"></a>
+			</div>
+			
+		</div>
+		
+		{% block complete_center %}
+		<div id="center" class="center">
+			{% block embedding %}{% end %}
+			<div id="card" class="card">
+				{% block center %}{% end %}
+			</div>
+		</div>
+		{% end %}
+	</body>
+	
+	<script src="{{ static_url("apis/jquery.min.js") }}"></script>
+		<script src="{{ static_url("apis/katex.min.js") }}"></script>
+		<script src="{{ static_url("apis/auto-render.min.js") }}"></script>
+	
+	{% set alert = globals().get('alert', None) %}
+	{% if alert is not None %}
+	<script>alert("{{alert}}")</script>
+	{% end %}
+
+	{% block script %}{% end %}
+</html>

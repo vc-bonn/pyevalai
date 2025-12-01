@@ -1,0 +1,143 @@
+{% extends "template_center.html" %}
+
+{% block bar %}
+<a class="item" href="/course/{{course["id"]}}"><div class="rangle"></div><div class="title">{{ course["name"] }}</div></a>
+<div class="item"><div class="rangle"></div><div class="title">{{ exercise["name"] }}</div></div>
+
+{% end %}
+
+{% block center %}
+
+	<div class="box">
+		
+		<!--div>previous / next exercise...</div-->
+		<div style="display:flex;justify-content:space-between;align-items: baseline;">
+			<div style="font-size:20px;font-weight:bold;">{{ exercise["name"] }}</div>
+			<div class="arrow_container">
+				
+				{% if prev_ex_id is not None %}
+					<a class="left" href="/exercise/{{course["id"]}}/{{prev_ex_id}}"></a>
+				{% else %}
+					<div class="left"></div>
+				{% end %}
+				
+				{% if next_ex_id is not None %}
+					<a class="right" href="/exercise/{{course["id"]}}/{{next_ex_id}}"></a>
+				{% else %}
+					<div class="right"></div>
+				{% end %}
+			</div>
+		
+		</div>
+		<div>Aufgabe:</div>
+		<div class="white_box markdown">{{ exercise["exercise"] }}</div>
+	</div>
+	<div class="box">
+		{% if exercise["student_solution"] is None %}
+			<div>Noch keine Lösung eingereicht...</div>
+		{% else %}
+		
+			<div style="display:flex;justify-content:space-between;align-items: baseline;">
+				<div>Lösung ({{ exercise["student_solution"]["timestamp"].strftime("%Y-%m-%d %H:%M:%S") }}):</div>
+				<div class="arrow_container">
+					{% if prev_solution_id is not None %}
+						<a class="left" href="/exercise/{{course["id"]}}/{{ex_id}}/{{prev_solution_id}}"></a>
+					{% else %}
+						<div class="left"></div>
+					{% end %}
+					
+					{% if next_solution_id is not None %}
+						<a class="right" href="/exercise/{{course["id"]}}/{{ex_id}}/{{next_solution_id}}"></a>
+					{% else %}
+						<div class="right"></div>
+					{% end %}
+				</div>
+			</div>
+			<div class="white_box markdown">{{ exercise["student_solution"]["solution"] }}</div>
+		{% end %}
+	</div>
+	
+	{% if exercise["grade"] is not None %}
+		<div class="box" id="answer">
+				
+			<div style="display:flex;justify-content:space-between;align-items: baseline;">
+				<div>Bewertung ({{ exercise["grade"]["timestamp"].strftime("%Y-%m-%d %H:%M:%S") }}):</div>
+				<div class="arrow_container">
+					{% if prev_grade_id is not None %}
+						<a class="left" href="/exercise/{{course["id"]}}/{{ex_id}}/{{solution_id}}/{{prev_grade_id}}"></a>
+					{% else %}
+						<div class="left"></div>
+					{% end %}
+					
+					{% if next_grade_id is not None %}
+						<a class="right" href="/exercise/{{course["id"]}}/{{ex_id}}/{{solution_id}}/{{next_grade_id}}"></a>
+					{% else %}
+						<div class="right"></div>
+					{% end %}
+				</div>
+			</div>
+				
+				
+			<div class="white_box markdown">{{ exercise["grade"]["answer"] }}</div>
+		</div>
+	{% end %}
+	
+	
+	
+	
+{% end %}
+
+
+
+{% block script %}
+
+<script src="{{ static_url("apis/marked.min.js") }}"></script>
+<script>
+
+document.body.innerHTML = document.body.innerHTML.replaceAll("\\begin{align}","$$$$\\begin{aligned}").replaceAll("\\end{align}","\\end{aligned}$$$$"
+	).replaceAll("\\begin{align*}","$$$$\\begin{aligned}").replaceAll("\\end{align*}","\\end{aligned}$$$$"
+	).replaceAll("\\begin{equation}","$$$$\\begin{aligned}").replaceAll("\\end{equation}","\\end{aligned}$$$$"
+	).replaceAll("\\begin{equation*}","$$$$\\begin{aligned}").replaceAll("\\end{equation*}","\\end{aligned}$$$$")
+
+
+// Render KaTeX math expressions in the document body
+renderMathInElement(document.body, {
+    delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+    ]
+});
+
+// Get all elements with the class "markdown"
+const mdElements = document.getElementsByClassName("markdown");
+
+for (let i = 0; i < mdElements.length; i++) {
+    let element = mdElements[i];
+
+    // Step 1: Save KaTeX-rendered spans
+    const katexSpans = [];
+	
+	
+	while(true){
+		spans = document.getElementsByTagName("span")
+		if (spans.length==0){
+			break
+			}
+		span = spans[0]
+		katexSpans.push(span.outerHTML); // Save the original HTML of the span
+        span.outerHTML = `<KATEX_PLACEHOLDER>`; // Replace with a placeholder
+	}
+	
+    element.innerHTML = marked.parse(element.innerHTML);
+	
+	while(true){
+		spans = document.getElementsByTagName("KATEX_PLACEHOLDER")
+		if (spans.length==0){
+			break
+			}
+		span = spans[0]
+        span.outerHTML = katexSpans.shift(); // Replace with a placeholder
+	}
+}
+</script>
+{% end %}

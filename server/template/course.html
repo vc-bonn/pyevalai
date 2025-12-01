@@ -1,0 +1,46 @@
+{% extends "template_center.html" %}
+
+{% block bar %}<div class="item"><div class="rangle"></div><div class="title">{{ course["name"] }}</div></div>{% end %}
+
+{% block center %}
+
+<div class="desciption" style="display:flex;justify-content:space-between; padding: 0 10px;">
+	<div>Aufgaben:</div>
+	<div>{{achieved_points}} / {{max_points}}</div>
+</div>
+
+	<div class="link_list">
+		{% if len(exercises)==0 %}
+			<div class="item">no exercises...</div> 
+		{% else %}
+			{% for exercise in exercises %}
+				<a class="item" href="/exercise/{{ course["id"] }}/{{ exercise["id"] }}">
+					<div>
+						<div>{{exercise["name"]}}</div>
+						<div style="font-size:10px">
+							{% if exercise["deadline"] is not None %}
+								Deadline: {{exercise["deadline"]}}
+							{% else %}
+								keine Deadline
+							{% end %}
+							
+							{% if exercise["n_tries"] is not None %}
+								, Versuche: {{exercise["n_attempts"]}} / {{exercise["n_tries"]}}
+							{% else %}
+								, beliebig viele Versuche
+							{% end %}
+						</div>
+					</div>
+					
+					<div style="font-weight:bold;min-width:fit-content;text-align:right;">
+						{% if exercise["grade"] is not None %}
+							{{ exercise["grade"]["points"]}} / {{ exercise["points"]}}
+						{% else %}
+							{{ exercise["points"]}}
+						{% end %}
+					</div>
+				</a>
+			{% end %}
+		{% end %}
+	</div>
+{% end %}

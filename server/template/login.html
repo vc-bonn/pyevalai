@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="{{ static_url("general_style.css") }}" type="text/css">
+		<link rel="shortcut icon" href="{{ static_url("icons/icon.png") }}" type="image/x-icon">
+	</head>
+	
+	<body>
+		<div class="center">
+		<div class="card">
+		
+			<h1><strong>Py</strong><small>thon</small> <strong>Eval</strong><small>uation</small> <strong>AI</strong></h1>
+			
+			{% if next_arg is not None %}
+			<form id="form" action="login?next={{next_arg}}" method="post">
+			{% else %}
+			<form id="form" action="login" method="post">
+			{% end %}
+				
+					<div class="descriptor">Username</div>
+					<input type="text" name="username" autofocus>
+					<div class="descriptor">Password</div>
+					<input type="password" name="password" onkeypress="if(event.keyCode==13){document.getElementById('form').submit()}">
+					<div style="display:flex">
+						<input type="button" value="Login" onclick="document.getElementById('form').submit()">
+					</div>
+					{% module xsrf_form_html() %}
+			</form>
+		</div>
+		</div>
+	</body>
+	
+	{% set alert = globals().get('alert', None) %}
+	{% if alert is not None %}
+	<script>alert("{{alert}}")</script>
+	{% end %}
+
+</html>
