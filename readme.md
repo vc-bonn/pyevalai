@@ -15,7 +15,7 @@ If you are a student or tutor, you can install PyEvalAI easily via pip:
 pip install pyevalai
 ```
 
-More documentation on the pyevalai client side is provided here: ... TODO
+More documentation on the pyevalai client side is provided in the [jupyter_client](jupyter_client/readme.md) folder.
 
 ## Installation (Server)
 
@@ -69,12 +69,13 @@ In the current implementation, courses have to be added manually in the pyevalai
 In future versions, we plan to provide a userinterface on the pyevalai server for these operations.
 
 ## Creating Exercises as an Admin
-Tutor
+Admins can create new exercises or modify existing exercises via the pyevalai package in jupyter notebooks. More information is provided inside the [jupyter_client](jupyter_client/readme.md) folder.
 
 ## Handing in Solutions as a Student
-
+Students can hand in their solutions via the pyevalai package in jupyter notebooks. More information is provided inside the [jupyter_client](jupyter_client/readme.md) folder. The grades by PyEvalAI will be directly displayed in the jupyter notebook file and can be also checked out on the Pyevalai website.
 
 ## AI-assisted grading as a Tutor
+To check (and eventually modify) the AI generated grades as a tutor, you can login on the Pyevalai website and enter the corresponding course. Here, a table of all students and exercises shows corresponding points and by clicking on a table entry, a form will pop up that allows to modify a grade.
 
 # Third-Party Packages
 
