@@ -9,7 +9,7 @@ This is the official repository for:
 
 ## Installation (Client)
 
-If you are a student or tutor, you can install PyEvalAI easily via pip:
+If you are a student or an admin, you can install PyEvalAI easily via pip:
 
 ```
 pip install pyevalai
