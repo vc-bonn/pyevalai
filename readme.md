@@ -24,7 +24,7 @@ If you are an administrator and want to install a local instance of the pyevalai
 First, download this repository from github:
 
 ```
-git clone https://github.com/
+git clone https://github.com/vc-bonn/pyevalai
 ```
 
 Then create a conda environment from the provided environment.yml file:
